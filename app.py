@@ -66,6 +66,23 @@ header, .block-container {
     white-space: normal !important;
     word-wrap: break-word !important;
 }
+
+/* Story box */
+.story-box {
+    background-color: #FFF3E6;
+    border-left: 8px solid #FF6600;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #333;
+}
+.story-title {
+    color: #FF6600;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,16 +94,12 @@ st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 st.markdown("<div class='logo-container'><img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# AUTO REFRESH
-# -----------------------
-st_autorefresh = st.experimental_rerun  # will refresh entire page when called
-
-# -----------------------
-# MAIN PLACEHOLDER
+# MAIN PLACEHOLDER (STABLE)
 # -----------------------
 placeholder = st.empty()
 with placeholder.container():
-    # Simulate dynamic calls count
+
+    # Simulated dynamic calls count
     call_count = 1248 + random.randint(0, 10)
     digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in str(call_count)])
     st.markdown(f"""
@@ -96,7 +109,9 @@ with placeholder.container():
     </div>
     """, unsafe_allow_html=True)
 
-    # Dummy Data
+    # -----------------------
+    # DUMMY DATA
+    # -----------------------
     data = pd.DataFrame({
         "lat": [31.78, 32.08, 32.17, 31.25, 32.09],
         "lon": [35.22, 34.78, 34.85, 34.79, 34.80],
@@ -111,7 +126,9 @@ with placeholder.container():
         ]
     })
 
-    # Layout
+    # -----------------------
+    # LAYOUT: MAP + PIE CHART
+    # -----------------------
     col1, col2 = st.columns([2, 1])
 
     with col1:
@@ -155,6 +172,26 @@ with placeholder.container():
     )
     st.plotly_chart(bar_fig, use_container_width=True)
 
-# Refresh every 10 seconds
+    # -----------------------
+    # ROTATING STORY SECTION
+    # -----------------------
+    stories = [
+        {"title": "Life Saved in Jerusalem", "text": "Volunteer raced to save a man who collapsed during prayers in Jerusalem."},
+        {"title": "Critical Rescue in Tel Aviv", "text": "A motorcyclist was revived after a severe accident thanks to UH medics."},
+        {"title": "Choking Child Saved", "text": "Quick action by UH responders in Netanya saved a child's life."},
+        {"title": "Cardiac Arrest Response", "text": "In Ashdod, medics arrived in under 3 minutes to save a life."},
+        {"title": "Near Drowning in Herzliya", "text": "Rapid CPR brought a swimmer back from the brink."}
+    ]
+    current_story = random.choice(stories)
+    st.markdown(f"""
+    <div class='story-box'>
+        <div class='story-title'>{current_story['title']}</div>
+        <div>{current_story['text']}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# -----------------------
+# AUTO REFRESH
+# -----------------------
 time.sleep(10)
 st.experimental_rerun()
