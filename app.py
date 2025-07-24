@@ -13,12 +13,12 @@ st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 # CUSTOM CSS
 # -----------------------
 st.markdown("""
-  <style>
-/* Sticky orange header */
+<style>
+/* Sticky header */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
-    padding: 12px 0; /* Balanced padding */
+    padding: 8px 0;  /* Minimal padding */
     color: white;
     font-size: 32px;
     font-weight: bold;
@@ -29,20 +29,21 @@ st.markdown("""
     z-index: 100;
 }
 
-/* Remove Streamlit default padding */
+/* Remove Streamlit top space */
 .block-container {
     padding-top: 0 !important;
+    margin-top: 0 !important;
 }
 
-/* Spacer for header */
+/* Reduce spacer drastically */
 .header-spacer {
-    height: 90px; /* Enough space for header */
+    height: 40px; /* Previously 80px */
 }
 
-/* Logo container */
+/* Logo closer to header */
 .logo-container {
     text-align: center;
-    margin: 10px 0 20px 0; /* Added bottom margin for spacing before counter */
+    margin: 5px 0 15px 0; /* Very small top margin */
 }
 
 /* Counter bar */
@@ -54,39 +55,22 @@ st.markdown("""
     flex-direction: column;
     font-weight: bold;
     color: #FF6600;
-    padding: 18px;
-    margin-bottom: 20px;
+    padding: 15px;
+    margin-bottom: 10px;
     border-radius: 10px;
 }
 
-/* Counter digits */
-.digit-container {
-    overflow: hidden;
-    height: 60px;
-    width: 40px;
-    display: inline-block;
-    margin: 0 3px;
-}
-.digit {
-    display: block;
-    font-size: 48px;
-    animation: roll 1.2s ease-in-out forwards;
-}
-@keyframes roll {
-    0% { transform: translateY(100%); }
-    100% { transform: translateY(0); }
-}
-
-/* Counter subtitle */
-.counter-title {
-    font-size: 18px;
-    margin-top: 8px;
-    text-transform: uppercase;
-}
-
-/* Tighten chart headers */
+/* Tighten subheaders */
 h2, h3, .stSubheader {
     margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 10px !important;
+}
+
+/* Tighten Plotly chart containers */
+.element-container {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
