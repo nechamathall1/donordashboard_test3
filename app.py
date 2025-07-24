@@ -10,7 +10,7 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CSS STYLING FOR HEADERS
+# CUSTOM CSS FOR HEADER & COUNTER
 # -----------------------
 st.markdown("""
     <style>
@@ -18,7 +18,7 @@ st.markdown("""
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 25px;
+        padding: 30px;  /* Increased padding for visibility */
         color: white;
         font-size: 36px;
         font-weight: bold;
@@ -30,38 +30,73 @@ st.markdown("""
     }
     /* Spacer so content isn't hidden */
     .header-spacer {
-        height: 110px;
+        height: 130px;
     }
-    /* Static counter banner */
+
+    /* Logo styling */
+    .logo-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    /* Counter styling */
     .counter-bar {
         background-color: #FFE6D5;
-        text-align: center;
-        padding: 20px;
-        font-size: 28px;
+        display: flex;
+        justify-content: center;
+        font-size: 48px;
         font-weight: bold;
         color: #FF6600;
-        margin-bottom: 20px;
+        letter-spacing: 5px;
+        padding: 15px;
+        margin-bottom: 30px;
+        border-radius: 10px;
+    }
+
+    /* iOS-style rolling number animation */
+    .digit-container {
+        overflow: hidden;
+        height: 60px;
+        width: 40px;
+        display: inline-block;
+        position: relative;
+        margin: 0 2px;
+    }
+    .digit {
+        display: block;
+        animation: roll 1.2s ease-in-out forwards;
+    }
+    @keyframes roll {
+        0% { transform: translateY(100%); }
+        100% { transform: translateY(0); }
     }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# STICKY ORANGE HEADER
+# HEADER
 # -----------------------
 st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# STATIC COUNTER BANNER
+# LOGO DISPLAY
 # -----------------------
-st.markdown("<div class='counter-bar'>CALLS TODAY: 1,248 AND COUNTING...</div>", unsafe_allow_html=True)
+st.markdown("<div class='logo-container'>"
+            "<img src=https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
+            "</div>", unsafe_allow_html=True)
 
 # -----------------------
-# LOGO DISPLAY (STATIC)
+# STATIC COUNTER WITH IOS STYLE
 # -----------------------
-st.image("https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png", width=200)
+# Example number: 1248
+number = "1248"
+digits_html = "".join([f"""
+<div class='digit-container'>
+    <div class='digit'>{d}</div>
+</div>""" for d in number])
 
-st.markdown("## Live Overview")
+st.markdown(f"<div class='counter-bar'>{digits_html}</div>", unsafe_allow_html=True)
 
 # -----------------------
 # SAMPLE DATA
