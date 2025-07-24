@@ -4,6 +4,8 @@ import plotly.express as px
 from streamlit_folium import st_folium
 from folium.plugins import HeatMap
 import folium
+import random
+import time
 
 # -----------------------
 # PAGE CONFIG
@@ -56,61 +58,6 @@ header, .block-container {
 @keyframes roll { 0% { transform: translateY(100%);} 100% { transform: translateY(0);} }
 .counter-title { font-size: 18px; margin-top: 8px; text-transform: uppercase; }
 
-/* Columns in one row */
-[data-testid="stHorizontalBlock"] > div {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-/* Map & Overlay */
-.map-container {
-    position: relative;
-    width: 100%;
-    margin: 0;
-}
-.story-overlay {
-    position: absolute;
-    top: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    max-height: 400px;
-    background: white;
-    z-index: 20;
-    padding: 20px;
-    border-radius: 10px;
-    overflow-y: auto;
-    animation: fadeIn 0.4s ease-in-out;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-@keyframes fadeIn {
-    from {opacity: 0;}
-    to {opacity: 1;}
-}
-.close-button {
-    position: absolute;
-    top: 10px; right: 10px;
-    background: #FF6600;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 50%;
-    width: 35px; height: 35px;
-    cursor: pointer;
-}
-.story-image {
-    display: block;
-    margin: 0 auto 15px auto;
-    max-width: 90%;
-    border-radius: 8px;
-}
-.story-text {
-    font-size: 15px;
-    line-height: 1.6;
-    text-align: justify;
-}
-
 /* Tooltip styling (hover snippet) */
 .leaflet-tooltip {
     font-size: 12px !important;
@@ -131,9 +78,60 @@ st.markdown("<div class='logo-container'><img src='https://israelrescue.org/app/
 # -----------------------
 # COUNTER
 # -----------------------
-number = "1248"
-digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in number])
+# Simulate live call count (in real scenario: pull from Salesforce/Google Sheets API)
+call_count = 1248 + random.randint(0, 5)  # simulate updates
+digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in str(call_count)])
 st.markdown(f"""
 <div class='counter-bar'>
     <div>{digits_html}</div>
-    <div class='counter-title'>
+    <div class='counter-title'>Calls Today</div>
+</div>
+""", unsafe_allow_html=True)
+
+# -----------------------
+# DUMMY DATA FOR MAP & CHARTS
+# -----------------------
+data = pd.DataFrame({
+    "lat": [31.78, 32.08, 32.17, 31.25, 32.09],
+    "lon": [35.22, 34.78, 34.85, 34.79, 34.80],
+    "city": ["Jerusalem", "Tel Aviv", "Netanya", "Ashdod", "Herzliya"],
+    "calls": [random.randint(50, 200) for _ in range(5)],
+    "story": [
+        "Volunteer raced to save a man who collapsed during prayers in Jerusalem.",
+        "In Tel Aviv, a motorcyclist was revived after a serious accident.",
+        "A child was choking in Netanya—saved in minutes by UH medics.",
+        "Cardiac arrest in Ashdod—rescue team arrived in under 3 minutes.",
+        "Herzliya beach swimmer rescued from near-drowning thanks to quick CPR."
+    ]
+})
+
+# -----------------------
+# LAYOUT: MAP + CHART
+# -----------------------
+col1, col2 = st.columns([2, 1])
+
+# MAP WITH HEATMAP & MARKERS
+with col1:
+    m = folium.Map(location=[31.8, 35.1], zoom_start=8)
+    heat_data = data[["lat", "lon", "calls"]].values.tolist()
+    HeatMap(heat_data, radius=25).add_to(m)
+
+    # Add markers with hover tooltip and click popup
+    for idx, row in data.iterrows():
+        folium.Marker(
+            location=[row["lat"], row["lon"]],
+            tooltip=f"{row['city']}: {row['calls']} calls",
+            popup=row["story"]
+        ).add_to(m)
+
+    st_data = st_folium(m, width=700, height=500)
+
+# PIE CHART OF CALL DISTRIBUTION
+with col2:
+    fig = px.pie(data, values="calls", names="city", title="Calls by City")
+    st.plotly_chart(fig, use_container_width=True)
+
+# BAR CHART BELOW
+st.subheader("Call Volume by City")
+bar_fig = px.bar(data, x="city", y="calls", text="calls", color="city")
+st.plotly_chart(bar_fig, use_container_width=True)
