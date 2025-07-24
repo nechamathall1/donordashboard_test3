@@ -18,7 +18,7 @@ st.markdown("""
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 30px;  /* Increased padding for visibility */
+        padding: 50px;  /* Increased padding for visibility */
         color: white;
         font-size: 36px;
         font-weight: bold;
@@ -49,7 +49,7 @@ st.markdown("""
         color: #FF6600;
         letter-spacing: 5px;
         padding: 15px;
-        margin-bottom: 30px;
+        margin-bottom: 10px;
         border-radius: 10px;
     }
 
