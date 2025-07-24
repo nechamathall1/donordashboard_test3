@@ -18,9 +18,9 @@ st.markdown("""
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 10px 0;  /* Reduced bottom padding */
+        padding: 10px 0;  /* Reduced padding */
         color: white;
-        font-size: 36px;
+        font-size: 34px;
         font-weight: bold;
         position: fixed;
         top: 0;
@@ -28,14 +28,21 @@ st.markdown("""
         width: 100%;
         z-index: 100;
     }
+
+    /* Remove default Streamlit top padding */
+    .block-container {
+        padding-top: 0rem;
+    }
+
+    /* Spacer so content isn't hidden */
     .header-spacer {
-        height: 100px; /* Ensures content below isn't hidden */
+        height: 80px; /* Adjusted smaller for tight layout */
     }
 
     /* Logo styling */
     .logo-container {
         text-align: center;
-        margin: 15px 0;
+        margin: 8px 0;  /* Reduced margin */
     }
 
     /* Counter styling */
@@ -47,19 +54,19 @@ st.markdown("""
         flex-direction: column;
         font-weight: bold;
         color: #FF6600;
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 15px;
+        margin-bottom: 15px;
         border-radius: 10px;
     }
 
-    /* Rolling number effect */
+    /* Rolling number animation */
     .digit-container {
         overflow: hidden;
         height: 60px;
         width: 40px;
         display: inline-block;
         position: relative;
-        margin: 0 3px;
+        margin: 0 2px;
     }
     .digit {
         display: block;
@@ -73,8 +80,8 @@ st.markdown("""
 
     /* Counter title */
     .counter-title {
-        font-size: 20px;
-        margin-top: 8px;
+        font-size: 18px;
+        margin-top: 6px;
         text-transform: uppercase;
     }
     </style>
@@ -87,7 +94,7 @@ st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>",
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# LOGO DISPLAY (NEW URL)
+# LOGO DISPLAY
 # -----------------------
 st.markdown("<div class='logo-container'>"
             "<img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
