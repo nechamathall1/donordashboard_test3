@@ -10,15 +10,15 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS FOR LAYOUT FIXES
+# CUSTOM CSS
 # -----------------------
 st.markdown("""
 <style>
-/* Sticky orange header */
+/* Sticky header */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
-    padding: 8px 0;  /* Minimal padding */
+    padding: 8px 0;
     color: white;
     font-size: 32px;
     font-weight: bold;
@@ -29,7 +29,7 @@ st.markdown("""
     z-index: 100;
 }
 
-/* Remove Streamlit default top padding */
+/* Remove default Streamlit padding */
 .block-container {
     padding-top: 0 !important;
     margin-top: 0 !important;
@@ -46,7 +46,7 @@ st.markdown("""
     margin: 5px 0 20px 0;
 }
 
-/* Counter container */
+/* Counter */
 .counter-bar {
     background-color: #FFE6D5;
     display: flex;
@@ -59,14 +59,10 @@ st.markdown("""
     margin-bottom: 15px;
     border-radius: 10px;
 }
-
-/* Counter digits in one row */
 .counter-bar > div:first-child {
     display: flex;
     justify-content: center;
 }
-
-/* Digit container */
 .digit-container {
     overflow: hidden;
     height: 60px;
@@ -81,21 +77,16 @@ st.markdown("""
     0% { transform: translateY(100%); }
     100% { transform: translateY(0); }
 }
-
-/* Counter title */
 .counter-title {
     font-size: 18px;
     margin-top: 8px;
     text-transform: uppercase;
 }
 
-/* Tight chart title spacing */
+/* Tight chart spacing */
 h2, h3, .stSubheader {
     margin-bottom: 2px !important;
-    margin-top: 8px !important;
 }
-
-/* Remove extra padding above Plotly charts */
 [data-testid="stPlotlyChart"] {
     margin-top: 0 !important;
     padding-top: 0 !important;
@@ -106,7 +97,7 @@ h2, h3, .stSubheader {
 # -----------------------
 # HEADER
 # -----------------------
-st.markdown("<div class='header-bar'>YOUR DAY OF LIFESAVING</div>", unsafe_allow_html=True)
+st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
@@ -152,18 +143,20 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# MAP & CHARTS
+# MAP + CHARTS
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
 with col1:
-    st.subheader("📍 Live Map of Calls")
+    st.markdown("<h3 style='margin-bottom:0;'>📍 Live Map of Calls</h3>", unsafe_allow_html=True)
     m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
     for i, row in df.iterrows():
+        anchor_id = row["City"].lower().replace(" ", "-")
         popup_html = f"""
         <div style="font-size:14px;">
         <b>{row['City']}</b><br>
-        {row['Story']}
+        {row['Story']}<br>
+        <a href="#story-{anchor_id}" style="color:#FF6600; text-decoration:underline;">Read full story</a>
         </div>
         """
         folium.Marker(
@@ -181,12 +174,44 @@ with col2:
     st.plotly_chart(fig_pie, use_container_width=True)
 
 # -----------------------
-# TOP CITIES BAR CHART
+# TOP CITIES CHART (ZERO GAP)
 # -----------------------
-st.subheader("🏙️ Top Cities by Call Volume")
+st.markdown("<h3 style='margin-bottom:0;'>🏙️ Top Cities by Call Volume</h3>", unsafe_allow_html=True)
 city_counts = df["City"].value_counts().reset_index()
 city_counts.columns = ["City", "Count"]
 fig_bar = px.bar(city_counts, x="Count", y="City", orientation='h',
                  color_discrete_sequence=['#FF6600'])
 fig_bar.update_layout(showlegend=False)
 st.plotly_chart(fig_bar, use_container_width=True)
+
+# -----------------------
+# TOP STORIES SECTION
+# -----------------------
+st.markdown("<h3 id='top-stories'>📖 Top Stories</h3>", unsafe_allow_html=True)
+
+stories = [
+    {
+        "id": "jerusalem",
+        "title": "Jerusalem: Life-Saving Tourniquet",
+        "image": "https://israelrescue.org/app/uploads/2023/05/jerusalem.jpg",
+        "text": "Yossi, a veteran United Hatzalah volunteer, rushed to the scene of a severe car accident in Jerusalem. Within 90 seconds, he applied a tourniquet to stop heavy bleeding and stabilized the patient before the ambulance arrived. Thanks to rapid intervention, the patient is alive and in stable condition today."
+    },
+    {
+        "id": "tel-aviv",
+        "title": "Tel Aviv: Pedestrian Saved in Rush Hour",
+        "image": "https://israelrescue.org/app/uploads/2023/05/telaviv.jpg",
+        "text": "During Tel Aviv's busiest traffic hour, UH volunteers reached a critically injured pedestrian within three minutes. Their quick action—oxygen, IV fluids, and immobilization—prevented severe complications. The patient was later transferred to Ichilov Hospital for surgery."
+    },
+    {
+        "id": "haifa",
+        "title": "Haifa: Toddler Choking Emergency",
+        "image": "https://israelrescue.org/app/uploads/2023/05/haifa.jpg",
+        "text": "A mother's scream echoed across a Haifa park as her toddler choked on a grape. UH medics performed back blows and suction to clear the airway, saving the child in seconds. By the time the ambulance arrived, the toddler was breathing normally and crying in relief."
+    }
+]
+
+for story in stories:
+    st.markdown(f'<a name="story-{story["id"]}"></a>', unsafe_allow_html=True)
+    with st.expander(story["title"], expanded=False):
+        st.image(story["image"], use_container_width=True)
+        st.write(story["text"])
