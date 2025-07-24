@@ -5,7 +5,6 @@ from streamlit_folium import st_folium
 from folium.plugins import HeatMap
 import folium
 import random
-import time
 
 # -----------------------
 # PAGE CONFIG
@@ -78,7 +77,6 @@ st.markdown("<div class='logo-container'><img src='https://israelrescue.org/app/
 # -----------------------
 # COUNTER
 # -----------------------
-# Simulate live call count (in real scenario: pull from Salesforce/Google Sheets API)
 call_count = 1248 + random.randint(0, 5)  # simulate updates
 digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in str(call_count)])
 st.markdown(f"""
@@ -89,7 +87,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -----------------------
-# DUMMY DATA FOR MAP & CHARTS
+# DUMMY DATA
 # -----------------------
 data = pd.DataFrame({
     "lat": [31.78, 32.08, 32.17, 31.25, 32.09],
@@ -106,17 +104,15 @@ data = pd.DataFrame({
 })
 
 # -----------------------
-# LAYOUT: MAP + CHART
+# LAYOUT: MAP + PIE CHART
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
-# MAP WITH HEATMAP & MARKERS
 with col1:
     m = folium.Map(location=[31.8, 35.1], zoom_start=8)
-    heat_data = data[["lat", "lon", "calls"]].values.tolist()
-    HeatMap(heat_data, radius=25).add_to(m)
+    heat_data = [[row["lat"], row["lon"], row["calls"]] for _, row in data.iterrows()]
+    HeatMap(heat_data, radius=25, gradient={0.2: 'yellow', 0.6: 'orange', 1: 'red'}).add_to(m)
 
-    # Add markers with hover tooltip and click popup
     for idx, row in data.iterrows():
         folium.Marker(
             location=[row["lat"], row["lon"]],
@@ -126,12 +122,29 @@ with col1:
 
     st_data = st_folium(m, width=700, height=500)
 
-# PIE CHART OF CALL DISTRIBUTION
 with col2:
-    fig = px.pie(data, values="calls", names="city", title="Calls by City")
+    fig = px.pie(
+        data, values="calls", names="city",
+        title="Calls by City",
+        color_discrete_sequence=["#FF6600", "#FF8533", "#FF9966", "#FFB399", "#FFD9CC"]
+    )
     st.plotly_chart(fig, use_container_width=True)
 
-# BAR CHART BELOW
+# -----------------------
+# FIXED HEIGHT BAR CHART (Orange Theme)
+# -----------------------
 st.subheader("Call Volume by City")
-bar_fig = px.bar(data, x="city", y="calls", text="calls", color="city")
+max_calls = 220  # fixed max for y-axis
+bar_fig = px.bar(
+    data, x="city", y="calls", text="calls",
+    color_discrete_sequence=["#FF6600"]
+)
+bar_fig.update_traces(textposition="outside")
+bar_fig.update_layout(
+    yaxis=dict(range=[0, max_calls]),
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    font=dict(color="#FF6600", size=14),
+    showlegend=False
+)
 st.plotly_chart(bar_fig, use_container_width=True)
