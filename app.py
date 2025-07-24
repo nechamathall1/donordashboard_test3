@@ -18,7 +18,7 @@ st.markdown("""
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 10px 0;  /* Reduced padding */
+        padding: 10px 0;
         color: white;
         font-size: 34px;
         font-weight: bold;
@@ -34,15 +34,15 @@ st.markdown("""
         padding-top: 0rem;
     }
 
-    /* Spacer so content isn't hidden */
+    /* Spacer after header */
     .header-spacer {
-        height: 80px; /* Adjusted smaller for tight layout */
+        height: 80px;
     }
 
     /* Logo styling */
     .logo-container {
         text-align: center;
-        margin: 8px 0;  /* Reduced margin */
+        margin: 8px 0 12px 0; /* Added bottom margin for spacing before counter */
     }
 
     /* Counter styling */
@@ -84,24 +84,29 @@ st.markdown("""
         margin-top: 6px;
         text-transform: uppercase;
     }
+
+    /* Tighten chart header spacing */
+    h2, h3, .stSubheader {
+        margin-bottom: 0px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER (STICKY)
+# HEADER
 # -----------------------
 st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# LOGO DISPLAY
+# LOGO
 # -----------------------
 st.markdown("<div class='logo-container'>"
             "<img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
             "</div>", unsafe_allow_html=True)
 
 # -----------------------
-# COUNTER SECTION
+# COUNTER
 # -----------------------
 number = "1248"
 digits_html = "".join([f"""
@@ -136,7 +141,7 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# MAP & CHARTS
+# MAP + PIE
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
