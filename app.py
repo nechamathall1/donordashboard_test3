@@ -42,31 +42,31 @@ st.markdown("""
 @keyframes roll { 0% { transform: translateY(100%);} 100% { transform: translateY(0);} }
 .counter-title { font-size: 18px; margin-top: 8px; text-transform: uppercase; }
 
-/* Remove Streamlit default gaps */
-[data-testid="stVerticalBlock"], [data-testid="stHorizontalBlock"] {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
+/* Alignment fixes */
+[data-testid="stHorizontalBlock"] > div {
+    display: flex;
+    align-items: stretch;
 }
-div[data-testid="stVerticalBlock"] > div {
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* Map container fixed height */
 .map-container {
-    height: 500px;
     position: relative;
+    width: 100%;
+    height: 500px;
+    margin-bottom: 10px;
 }
 .story-overlay {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: white;
-    z-index: 10;
-    border-radius: 10px;
+    z-index: 20;
     padding: 20px;
+    border-radius: 10px;
     overflow-y: auto;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    animation: fadeIn 0.4s ease-in-out;
+}
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
 }
 .close-button {
     position: absolute;
@@ -82,7 +82,7 @@ div[data-testid="stVerticalBlock"] > div {
 .story-image {
     display: block;
     margin: 0 auto 15px auto;
-    max-width: 600px;
+    max-width: 90%;
     border-radius: 8px;
 }
 .story-text {
@@ -131,12 +131,17 @@ coordinates = {
 }
 
 stories = {
-    "Jerusalem": "On a stormy night in Jerusalem, a horrific car crash left a young man bleeding profusely on a rain-slicked road. Yossi, a veteran UH volunteer, dropped everything when the alert came in. Racing through gridlock on his ambucycle, he reached the scene in under three minutes. Every second counted. Pulling out his trauma kit, Yossi applied a tourniquet that stopped the bleeding and stabilized the patient. By the time paramedics arrived, vitals were steady. Doctors later said Yossi’s speed and skill prevented certain death.",
-    "Tel Aviv": "In the heart of Tel Aviv during evening rush hour, chaos erupted when a pedestrian was struck by a speeding car. Traffic froze, but United Hatzalah volunteers didn’t hesitate. Cutting through gridlock on ambucycles, they reached the patient in minutes. Oxygen, spinal stabilization, and quick wound management kept him alive as crowds gathered. The hospital team confirmed: early intervention saved this man’s life.",
-    "Haifa": "A Haifa park turned into a nightmare when a toddler began choking on a grape. His mother’s screams pierced the air, and panic spread among bystanders. Two UH medics, just blocks away, raced to the scene. With practiced precision, they cleared the airway and delivered back blows that brought life back to the child.",
-    "Beersheba": "When a 58-year-old man collapsed in his home in Beersheba, his wife dialed for help in tears. UH volunteers were on scene in moments, performing CPR and delivering an electric shock with a defibrillator. His heart started again. Minutes later, he was stable enough for hospital transfer.",
-    "Netanya": "A sunny beach day nearly ended in tragedy when a swimmer was pulled from the waves unconscious. UH responders sprinted across the sand, initiating advanced airway management and oxygen delivery right on the shoreline.",
-    "Eilat": "In Eilat’s crystal-blue waters, a diver’s fun dive turned into a nightmare when an allergic reaction sent her into shock. UH medics were alerted and arrived within minutes, administering epinephrine and stabilizing her until an ambulance arrived."
+    "Jerusalem": "On a stormy night in Jerusalem, a horrific car crash left a young man bleeding profusely on a rain-slicked road. Yossi, a veteran UH volunteer, dropped everything when the alert came in...",
+    "Tel Aviv": "In the heart of Tel Aviv during evening rush hour, chaos erupted when a pedestrian was struck by a speeding car...",
+    "Haifa": "A Haifa park turned into a nightmare when a toddler began choking on a grape. His mother’s screams pierced the air...",
+    "Beersheba": "When a 58-year-old man collapsed in his home in Beersheba, his wife dialed for help in tears...",
+    "Netanya": "A sunny beach day nearly ended in tragedy when a swimmer was pulled from the waves unconscious...",
+    "Eilat": "In Eilat’s crystal-blue waters, a diver’s fun dive turned into a nightmare when an allergic reaction sent her into shock..."
+}
+
+full_stories = {
+    city: text.replace("...", "") + " This rescue, like thousands each year, is possible only because people like you keep UH volunteers equipped and ready 24/7."
+    for city, text in stories.items()
 }
 
 image_url = "https://israelrescue.org/app/uploads/2022/11/volunteer-1-1024x683.jpg"
@@ -161,12 +166,13 @@ with col1:
         m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
         HeatMap(list(coordinates.values()), gradient={0.2: '#FFDAB3', 0.4: '#FF944D', 0.6: '#FF6600', 1: '#CC5200'}).add_to(m)
 
-        # Add markers with snippet popups
+        # Add markers with snippet tooltip
         for city, coords in coordinates.items():
-            snippet = create_snippet(stories[city])
+            snippet = create_snippet(full_stories[city])
             folium.Marker(
                 coords,
-                popup=f"<b>{city}</b><br>{snippet}",
+                tooltip=f"{snippet}",  # ✅ Show on hover
+                popup=city,            # Click detection will use this
                 icon=folium.Icon(color="orange", icon="info-sign")
             ).add_to(m)
 
@@ -185,7 +191,7 @@ with col1:
             <button class='close-button' onclick="window.parent.postMessage('close','*')">X</button>
             <h3>{city}: Featured Rescue</h3>
             <img src='{image_url}' class='story-image'>
-            <p class='story-text'>{stories[city]}</p>
+            <p class='story-text'>{full_stories[city]}</p>
         </div>
         """, unsafe_allow_html=True)
         if st.button("Close Story"):
