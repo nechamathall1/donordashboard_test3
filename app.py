@@ -15,6 +15,7 @@ st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 # -----------------------
 st.markdown("""
 <style>
+/* Header Bar */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
@@ -29,7 +30,20 @@ st.markdown("""
     z-index: 100;
 }
 .header-spacer { height: 60px !important; }
-.logo-container { text-align: center; margin: 15px 0; }
+
+/* Remove Streamlit padding */
+header, .block-container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Logo */
+.logo-container {
+    text-align: center;
+    margin: 5px 0 !important;
+}
+
+/* Counter bar */
 .counter-bar {
     background-color: #FFE6D5;
     display: flex; justify-content: center; align-items: center;
@@ -42,27 +56,36 @@ st.markdown("""
 @keyframes roll { 0% { transform: translateY(100%);} 100% { transform: translateY(0);} }
 .counter-title { font-size: 18px; margin-top: 8px; text-transform: uppercase; }
 
-/* Alignment fixes */
+/* Column alignment fix */
 [data-testid="stHorizontalBlock"] > div {
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
 }
+
+/* Map container */
 .map-container {
     position: relative;
     width: 100%;
     height: 500px;
     margin-bottom: 10px;
 }
+
+/* Story Overlay */
 .story-overlay {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 80%;   /* Centered and smaller */
+    height: 90%;
     background: white;
     z-index: 20;
     padding: 20px;
     border-radius: 10px;
     overflow-y: auto;
     animation: fadeIn 0.4s ease-in-out;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 @keyframes fadeIn {
     from {opacity: 0;}
@@ -171,8 +194,8 @@ with col1:
             snippet = create_snippet(full_stories[city])
             folium.Marker(
                 coords,
-                tooltip=f"{snippet}",  # ✅ Show on hover
-                popup=city,            # Click detection will use this
+                tooltip=f"{snippet}",  # ✅ Hover snippet
+                popup=city,            # Click detection
                 icon=folium.Icon(color="orange", icon="info-sign")
             ).add_to(m)
 
@@ -213,5 +236,5 @@ with col2:
 st.markdown("<h3 style='margin-bottom:10px;'>🏙️ Top 5 Cities by Call Volume</h3>", unsafe_allow_html=True)
 df_cities = pd.DataFrame({"City": list(coordinates.keys()), "Count": [42, 38, 31, 27, 24, 19]})
 fig_bar = px.bar(df_cities.head(5), x="Count", y="City", orientation="h", color_discrete_sequence=['#FF6600'])
-fig_bar.update_layout(showlegend=False)
+fig_bar.update_layout(showlegend=False, margin=dict(l=20,r=20,t=20,b=20))
 st.plotly_chart(fig_bar, use_container_width=True)
