@@ -3,7 +3,6 @@ import pandas as pd
 import plotly.express as px
 from streamlit_folium import st_folium
 import folium
-import time
 
 # -----------------------
 # PAGE CONFIGURATION
@@ -11,14 +10,15 @@ import time
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CSS STYLING FOR STICKY HEADER
+# CSS STYLING FOR HEADERS
 # -----------------------
 st.markdown("""
     <style>
+    /* Sticky orange header */
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 20px;
+        padding: 25px;
         color: white;
         font-size: 36px;
         font-weight: bold;
@@ -28,35 +28,36 @@ st.markdown("""
         width: 100%;
         z-index: 100;
     }
+    /* Spacer so content isn't hidden */
     .header-spacer {
-        height: 100px; /* Keeps content below header */
+        height: 110px;
+    }
+    /* Static counter banner */
+    .counter-bar {
+        background-color: #FFE6D5;
+        text-align: center;
+        padding: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #FF6600;
+        margin-bottom: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER (ANIMATED COUNTER)
+# STICKY ORANGE HEADER
 # -----------------------
-calls_placeholder = st.empty()
-calls_placeholder.markdown(f"""
-<div class='header-bar'>
-    CALLS TODAY: 0 AND COUNTING...
-</div>
-<div class='header-spacer'></div>
-""", unsafe_allow_html=True)
-
-total_calls = 1248
-for i in range(0, total_calls + 1, 50):
-    calls_placeholder.markdown(f"""
-    <div class='header-bar'>
-        CALLS TODAY: {i:,} AND COUNTING...
-    </div>
-    <div class='header-spacer'></div>
-    """, unsafe_allow_html=True)
-    time.sleep(0.05)
+st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
+st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# STATIC LOGO ABOVE GRAPHS
+# STATIC COUNTER BANNER
+# -----------------------
+st.markdown("<div class='counter-bar'>CALLS TODAY: 1,248 AND COUNTING...</div>", unsafe_allow_html=True)
+
+# -----------------------
+# LOGO DISPLAY (STATIC)
 # -----------------------
 st.image("https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png", width=200)
 
