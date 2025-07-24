@@ -75,7 +75,7 @@ header, .block-container {
     top: 0; left: 50%;
     transform: translateX(-50%);
     width: 80%;
-    height: 90%;
+    max-height: 400px;
     background: white;
     z-index: 20;
     padding: 20px;
@@ -106,7 +106,7 @@ header, .block-container {
     border-radius: 8px;
 }
 .story-text {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.6;
     text-align: justify;
 }
@@ -114,7 +114,9 @@ header, .block-container {
 /* Tooltip styling (hover snippet) */
 .leaflet-tooltip {
     font-size: 12px !important;
-    max-width: 200px;
+    max-width: 180px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -134,102 +136,4 @@ digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</di
 st.markdown(f"""
 <div class='counter-bar'>
     <div>{digits_html}</div>
-    <div class='counter-title'>Calls and counting!</div>
-</div>
-""", unsafe_allow_html=True)
-
-# -----------------------
-# SESSION STATE
-# -----------------------
-if "selected_story" not in st.session_state:
-    st.session_state.selected_story = None
-
-# -----------------------
-# DATA
-# -----------------------
-coordinates = {
-    "Jerusalem": [31.7683, 35.2137],
-    "Tel Aviv": [32.0853, 34.7818],
-    "Haifa": [32.7940, 34.9896],
-    "Beersheba": [31.2520, 34.7915],
-    "Netanya": [32.3215, 34.8532],
-    "Eilat": [29.5577, 34.9519]
-}
-
-stories = {
-    "Jerusalem": "On a stormy night in Jerusalem, a horrific car crash left a young man bleeding profusely on a rain-slicked road...",
-    "Tel Aviv": "In the heart of Tel Aviv during evening rush hour, chaos erupted when a pedestrian was struck by a speeding car...",
-    "Haifa": "A Haifa park turned into a nightmare when a toddler began choking on a grape...",
-    "Beersheba": "When a 58-year-old man collapsed in his home in Beersheba, his wife dialed for help in tears...",
-    "Netanya": "A sunny beach day nearly ended in tragedy when a swimmer was pulled from the waves unconscious...",
-    "Eilat": "In Eilat’s crystal-blue waters, a diver’s fun dive turned into a nightmare..."
-}
-
-full_stories = {
-    city: text.replace("...", "") + " This rescue, like thousands each year, is possible only because people like you keep UH volunteers equipped and ready 24/7."
-    for city, text in stories.items()
-}
-
-image_url = "https://israelrescue.org/app/uploads/2022/11/volunteer-1-1024x683.jpg"
-
-def create_snippet(text, words=10):
-    return " ".join(text.split()[:words]) + "..."
-
-# -----------------------
-# MAIN CONTENT: MAP & PIE
-# -----------------------
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.markdown("### 📍 Live Heatmap & Stories")
-    if st.session_state.selected_story is None:
-        m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
-        HeatMap(list(coordinates.values()), gradient={0.2: '#FFDAB3', 0.4: '#FF944D', 0.6: '#FF6600', 1: '#CC5200'}).add_to(m)
-
-        for city, coords in coordinates.items():
-            snippet = create_snippet(full_stories[city])
-            folium.Marker(
-                coords,
-                tooltip=snippet,  # ✅ Hover snippet
-                popup=city,       # Click detection
-                icon=folium.Icon(color="orange", icon="info-sign")
-            ).add_to(m)
-
-        map_data = st_folium(m, width=700, height=500)
-        if map_data and map_data.get("last_object_clicked"):
-            clicked_coords = map_data["last_object_clicked"]
-            for city, coords in coordinates.items():
-                if abs(coords[0] - clicked_coords["lat"]) < 0.05 and abs(coords[1] - clicked_coords["lng"]) < 0.05:
-                    st.session_state.selected_story = city
-                    st.rerun()
-    else:
-        city = st.session_state.selected_story
-        st.markdown(f"""
-        <div class='map-container'>
-            <div class='story-overlay'>
-                <button class='close-button' onclick="window.parent.postMessage('close','*')">X</button>
-                <h3>{city}: Featured Rescue</h3>
-                <img src='{image_url}' class='story-image'>
-                <p class='story-text'>{full_stories[city]}</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        if st.button("Close Story"):
-            st.session_state.selected_story = None
-            st.rerun()
-
-with col2:
-    st.markdown("### 📊 Call Type Breakdown")
-    fig_pie = px.pie(values=[42, 38, 31, 27, 19], names=["Trauma", "Cardiac", "OB/GYN", "Medical", "Other"],
-                     color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3','#FFB380'])
-    fig_pie.update_traces(textinfo="percent+label")
-    st.plotly_chart(fig_pie, use_container_width=True)
-
-# -----------------------
-# BAR CHART BELOW
-# -----------------------
-st.markdown("### 🏙️ Top 5 Cities by Call Volume")
-df_cities = pd.DataFrame({"City": list(coordinates.keys()), "Count": [42, 38, 31, 27, 24, 19]})
-fig_bar = px.bar(df_cities.head(5), x="Count", y="City", orientation="h", color_discrete_sequence=['#FF6600'])
-fig_bar.update_layout(showlegend=False, margin=dict(l=20,r=20,t=20,b=20))
-st.plotly_chart(fig_bar, use_container_width=True)
+    <div class='counter-title'>
