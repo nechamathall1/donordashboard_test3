@@ -10,7 +10,7 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS FOR HEADER & COUNTER
+# CUSTOM CSS
 # -----------------------
 st.markdown("""
     <style>
@@ -18,7 +18,7 @@ st.markdown("""
     .header-bar {
         background-color: #FF6600;
         text-align: center;
-        padding: 50px;  /* Increased padding for visibility */
+        padding: 10px 0;  /* Reduced bottom padding */
         color: white;
         font-size: 36px;
         font-weight: bold;
@@ -28,15 +28,14 @@ st.markdown("""
         width: 100%;
         z-index: 100;
     }
-    /* Spacer so content isn't hidden */
     .header-spacer {
-        height: 130px;
+        height: 100px; /* Ensures content below isn't hidden */
     }
 
     /* Logo styling */
     .logo-container {
         text-align: center;
-        margin: 20px 0;
+        margin: 15px 0;
     }
 
     /* Counter styling */
@@ -44,59 +43,71 @@ st.markdown("""
         background-color: #FFE6D5;
         display: flex;
         justify-content: center;
-        font-size: 48px;
+        align-items: center;
+        flex-direction: column;
         font-weight: bold;
         color: #FF6600;
-        letter-spacing: 5px;
-        padding: 15px;
-        margin-bottom: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
         border-radius: 10px;
     }
 
-    /* iOS-style rolling number animation */
+    /* Rolling number effect */
     .digit-container {
         overflow: hidden;
         height: 60px;
         width: 40px;
         display: inline-block;
         position: relative;
-        margin: 0 2px;
+        margin: 0 3px;
     }
     .digit {
         display: block;
         animation: roll 1.2s ease-in-out forwards;
+        font-size: 48px;
     }
     @keyframes roll {
         0% { transform: translateY(100%); }
         100% { transform: translateY(0); }
     }
+
+    /* Counter title */
+    .counter-title {
+        font-size: 20px;
+        margin-top: 8px;
+        text-transform: uppercase;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER
+# HEADER (STICKY)
 # -----------------------
 st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
-# LOGO DISPLAY
+# LOGO DISPLAY (NEW URL)
 # -----------------------
 st.markdown("<div class='logo-container'>"
-            "<img src=https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
+            "<img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
             "</div>", unsafe_allow_html=True)
 
 # -----------------------
-# STATIC COUNTER WITH IOS STYLE
+# COUNTER SECTION
 # -----------------------
-# Example number: 1248
 number = "1248"
 digits_html = "".join([f"""
 <div class='digit-container'>
     <div class='digit'>{d}</div>
 </div>""" for d in number])
 
-st.markdown(f"<div class='counter-bar'>{digits_html}</div>", unsafe_allow_html=True)
+st.markdown(f"""
+<div class='counter-bar'>
+    <div>{digits_html}</div>
+    <div class='counter-title'>Calls and counting!</div>
+</div>
+""", unsafe_allow_html=True)
 
 # -----------------------
 # SAMPLE DATA
@@ -118,7 +129,7 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# LAYOUT: MAP + PIE
+# MAP & CHARTS
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
