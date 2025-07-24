@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from streamlit_folium import st_folium
 import folium
+import time
 
 # -----------------------
 # PAGE CONFIGURATION
@@ -10,46 +11,59 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS STYLING
+# CUSTOM CSS
 # -----------------------
 st.markdown("""
     <style>
     .main {background-color: #F9F9F9;}
     .header-bar {
         background-color: #FF6600;
-        padding: 15px;
-        text-align: center;
-        color: white;
-        font-size: 36px;
-        font-weight: bold;
-    }
-    .logo {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: -20px;
+        justify-content: center;
+        padding: 15px;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+        gap: 15px;
     }
-    .logo img {
-        height: 70px;
-    }
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+    .header-bar img {
+        height: 60px;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER WITH LOGO & TITLE
+# HEADER BAR WITH LOGO + COUNTER
 # -----------------------
-col_logo, col_title = st.columns([1, 4])
-with col_logo:
-    st.image("UH-logo.svg", use_column_width=False, width=120)
-with col_title:
-    st.markdown("<h2 style='color:#FF6600; font-weight:bold;'>UNITED HATZALAH</h2>", unsafe_allow_html=True)
+# Try local logo, else fallback to online
+logo_url = "UH-logo.svg"
+try:
+    with open(logo_url, "rb"):
+        logo_src = logo_url
+except:
+    logo_src = "https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png"
 
-# ORANGE HEADER BAR
-st.markdown("<div class='header-bar'>CALLS TODAY: 1,248 AND COUNTING...</div>", unsafe_allow_html=True)
+# Animated rolling counter
+calls_placeholder = st.empty()
+counter_html = f"""
+<div class='header-bar'>
+    <img src='{logo_src}' alt='UH Logo'>
+    CALLS TODAY: <span id='counter'>0</span> AND COUNTING...
+</div>
+"""
+calls_placeholder.markdown(counter_html, unsafe_allow_html=True)
+
+# Counter animation
+total_calls = 1248
+for i in range(0, total_calls + 1, 50):
+    calls_placeholder.markdown(f"""
+    <div class='header-bar'>
+        <img src='{logo_src}' alt='UH Logo'>
+        CALLS TODAY: {i:,} AND COUNTING...
+    </div>
+    """, unsafe_allow_html=True)
+    time.sleep(0.05)
 
 # -----------------------
 # SAMPLE DATA
@@ -71,7 +85,7 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# LAYOUT: MAP + CHARTS
+# LAYOUT: MAP + PIE CHART
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
@@ -93,8 +107,8 @@ with col1:
     st_folium(m, width=700, height=500)
 
 with col2:
-    st.subheader("📊 Distribution of Call Types")
-    fig_pie = px.pie(df, names="Call Type", title="", color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3','#FFB380'])
+    st.subheader("📊 Call Type Breakdown")
+    fig_pie = px.pie(df, names="Call Type", color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3','#FFB380'])
     fig_pie.update_traces(textinfo="percent+label")
     st.plotly_chart(fig_pie, use_container_width=True)
 
@@ -104,6 +118,7 @@ with col2:
 st.subheader("🏙️ Top Cities by Call Volume")
 city_counts = df["City"].value_counts().reset_index()
 city_counts.columns = ["City", "Count"]
-fig_bar = px.bar(city_counts, x="Count", y="City", orientation='h', color_discrete_sequence=['#FF6600'])
+fig_bar = px.bar(city_counts, x="Count", y="City", orientation='h',
+                 color_discrete_sequence=['#FF6600'])
 fig_bar.update_layout(showlegend=False)
 st.plotly_chart(fig_bar, use_container_width=True)
