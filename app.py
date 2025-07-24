@@ -10,11 +10,11 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS
+# CUSTOM CSS FOR LAYOUT FIXES
 # -----------------------
 st.markdown("""
 <style>
-/* Sticky header */
+/* Sticky orange header */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
@@ -29,24 +29,24 @@ st.markdown("""
     z-index: 100;
 }
 
-/* Remove Streamlit top space */
+/* Remove Streamlit default top padding */
 .block-container {
     padding-top: 0 !important;
     margin-top: 0 !important;
 }
 
-/* Reduce spacer drastically */
+/* Spacer below header */
 .header-spacer {
-    height: 40px; /* Previously 80px */
+    height: 20px !important;
 }
 
-/* Logo closer to header */
+/* Logo container */
 .logo-container {
     text-align: center;
-    margin: 5px 0 15px 0; /* Very small top margin */
+    margin: 5px 0 20px 0;
 }
 
-/* Counter bar */
+/* Counter container */
 .counter-bar {
     background-color: #FFE6D5;
     display: flex;
@@ -56,19 +56,47 @@ st.markdown("""
     font-weight: bold;
     color: #FF6600;
     padding: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     border-radius: 10px;
 }
 
-/* Tighten subheaders */
-h2, h3, .stSubheader {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-    margin-top: 10px !important;
+/* Counter digits in one row */
+.counter-bar > div:first-child {
+    display: flex;
+    justify-content: center;
 }
 
-/* Tighten Plotly chart containers */
-.element-container {
+/* Digit container */
+.digit-container {
+    overflow: hidden;
+    height: 60px;
+    width: 40px;
+    margin: 0 3px;
+}
+.digit {
+    font-size: 48px;
+    animation: roll 1.2s ease-in-out forwards;
+}
+@keyframes roll {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(0); }
+}
+
+/* Counter title */
+.counter-title {
+    font-size: 18px;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+/* Tight chart title spacing */
+h2, h3, .stSubheader {
+    margin-bottom: 2px !important;
+    margin-top: 8px !important;
+}
+
+/* Remove extra padding above Plotly charts */
+[data-testid="stPlotlyChart"] {
     margin-top: 0 !important;
     padding-top: 0 !important;
 }
@@ -124,7 +152,7 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# MAP + PIE
+# MAP & CHARTS
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
