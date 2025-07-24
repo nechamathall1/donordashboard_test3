@@ -17,14 +17,11 @@ st.markdown("""
     <style>
     .header-bar {
         background-color: #FF6600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 15px;
+        text-align: center;
+        padding: 20px;
         color: white;
-        font-size: 32px;
+        font-size: 36px;
         font-weight: bold;
-        gap: 15px;
         position: fixed;
         top: 0;
         left: 0;
@@ -32,40 +29,38 @@ st.markdown("""
         z-index: 100;
     }
     .header-spacer {
-        height: 100px; /* Prevent content overlap */
-    }
-    .header-bar img {
-        height: 60px;
+        height: 100px; /* Keeps content below header */
     }
     </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER WITH LOGO + COUNTER (ANIMATED)
+# HEADER (ANIMATED COUNTER)
 # -----------------------
-logo_url = "https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png"
-
 calls_placeholder = st.empty()
-counter_html = f"""
+calls_placeholder.markdown(f"""
 <div class='header-bar'>
-    <img src='{logo_url}' alt='UH Logo'>
-    CALLS TODAY: <span id='counter'>0</span> AND COUNTING...
+    CALLS TODAY: 0 AND COUNTING...
 </div>
 <div class='header-spacer'></div>
-"""
-calls_placeholder.markdown(counter_html, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# Animate rolling counter
 total_calls = 1248
 for i in range(0, total_calls + 1, 50):
     calls_placeholder.markdown(f"""
     <div class='header-bar'>
-        <img src='{logo_url}' alt='UH Logo'>
         CALLS TODAY: {i:,} AND COUNTING...
     </div>
     <div class='header-spacer'></div>
     """, unsafe_allow_html=True)
     time.sleep(0.05)
+
+# -----------------------
+# STATIC LOGO ABOVE GRAPHS
+# -----------------------
+st.image("https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png", width=200)
+
+st.markdown("## Live Overview")
 
 # -----------------------
 # SAMPLE DATA
