@@ -15,7 +15,6 @@ st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 # -----------------------
 st.markdown("""
 <style>
-/* Sticky header */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
@@ -24,20 +23,13 @@ st.markdown("""
     font-size: 32px;
     font-weight: bold;
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     width: 100%;
     z-index: 100;
 }
-.block-container {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-/* Spacer below header */
+.block-container { padding-top: 0 !important; margin-top: 0 !important; }
 .header-spacer { height: 20px !important; }
-/* Logo */
-.logo-container { text-align: center; margin: 5px 0 15px 0; }
-/* Counter */
+.logo-container { text-align: center; margin: 5px 0 10px 0; }
 .counter-bar {
     background-color: #FFE6D5;
     display: flex; justify-content: center; align-items: center;
@@ -49,42 +41,24 @@ st.markdown("""
 .digit { font-size: 48px; animation: roll 1.2s ease-in-out forwards; }
 @keyframes roll { 0% { transform: translateY(100%);} 100% { transform: translateY(0);} }
 .counter-title { font-size: 18px; margin-top: 8px; text-transform: uppercase; }
-/* Remove gaps between charts and sections */
 [data-testid="stHorizontalBlock"] { gap: 1rem !important; }
-[data-testid="stVerticalBlock"] { margin-bottom: 0 !important; }
-/* Tight chart title spacing */
-h2, h3, .stSubheader { margin-bottom: 2px !important; }
 [data-testid="stPlotlyChart"] { margin-top: 0 !important; padding-top: 0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER
+# HEADER + LOGO
 # -----------------------
 st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
-
-# -----------------------
-# LOGO
-# -----------------------
-st.markdown("<div class='logo-container'>"
-            "<img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'>"
-            "</div>", unsafe_allow_html=True)
+st.markdown("<div class='logo-container'><img src='https://israelrescue.org/app/uploads/2023/08/UH-logo.svg' width='200'></div>", unsafe_allow_html=True)
 
 # -----------------------
 # COUNTER
 # -----------------------
 number = "1248"
-digits_html = "".join([f"""
-<div class='digit-container'>
-    <div class='digit'>{d}</div>
-</div>""" for d in number])
-st.markdown(f"""
-<div class='counter-bar'>
-    <div>{digits_html}</div>
-    <div class='counter-title'>Calls and counting!</div>
-</div>
-""", unsafe_allow_html=True)
+digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in number])
+st.markdown(f"<div class='counter-bar'><div>{digits_html}</div><div class='counter-title'>Calls and counting!</div></div>", unsafe_allow_html=True)
 
 # -----------------------
 # DATA
@@ -103,69 +77,67 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# MAP
+# MAP + PIE CHART (SIDE BY SIDE)
 # -----------------------
-st.markdown("<h3 style='margin-bottom:0;'>📍 Live Map of Calls</h3>", unsafe_allow_html=True)
-m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
-for i, row in df.iterrows():
-    anchor_id = row["City"].lower().replace(" ", "-")
-    short_story = " ".join(row["Story"].split()[:15]) + "..."
-    popup_html = f"""
-    <div style="font-size:14px;">
-    <b>{row['City']}</b><br>
-    {short_story}<br>
-    <a href="#story-{anchor_id}" onclick="scrollToStory('{anchor_id}')" style="color:#FF6600; text-decoration:underline;">Read full story</a>
-    </div>
-    """
-    folium.Marker(
-        location=[row["Lat"], row["Lon"]],
-        popup=popup_html,
-        icon=folium.Icon(color="orange", icon="info-sign")
-    ).add_to(m)
-st_folium(m, width=700, height=500)
+col1, col2 = st.columns([2, 1])
+
+with col1:
+    st.markdown("<h3 style='margin-bottom:0;'>📍 Live Map of Calls</h3>", unsafe_allow_html=True)
+    m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
+    for i, row in df.iterrows():
+        short_story = " ".join(row["Story"].split()[:15]) + "..."
+        anchor_id = row["City"].lower().replace(" ", "-")
+        popup_html = f"""
+        <div style="font-size:14px;">
+        <b>{row['City']}</b><br>
+        {short_story}<br>
+        <a href="#story-{anchor_id}" onclick="scrollToStory('{anchor_id}')" style="color:#FF6600; text-decoration:underline;">Read full story</a>
+        </div>
+        """
+        folium.Marker([row["Lat"], row["Lon"]],
+                      popup=popup_html,
+                      icon=folium.Icon(color="orange", icon="info-sign")).add_to(m)
+    st_folium(m, width=700, height=500)
+
+with col2:
+    st.markdown("<h3 style='margin-bottom:0;'>📊 Call Type Breakdown</h3>", unsafe_allow_html=True)
+    fig_pie = px.pie(df, names="Call Type",
+                     color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3'])
+    fig_pie.update_traces(textinfo="percent+label")
+    st.plotly_chart(fig_pie, use_container_width=True)
 
 # -----------------------
-# PIE CHART
-# -----------------------
-st.subheader("📊 Call Type Breakdown")
-fig_pie = px.pie(df, names="Call Type",
-                 color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3'])
-fig_pie.update_traces(textinfo="percent+label")
-st.plotly_chart(fig_pie, use_container_width=True)
-
-# -----------------------
-# BAR CHART (ZERO GAP)
+# BAR CHART
 # -----------------------
 st.markdown("<h3 style='margin-bottom:0;'>🏙️ Top Cities by Call Volume</h3>", unsafe_allow_html=True)
 city_counts = df["City"].value_counts().reset_index()
 city_counts.columns = ["City", "Count"]
-fig_bar = px.bar(city_counts, x="Count", y="City", orientation='h',
-                 color_discrete_sequence=['#FF6600'])
+fig_bar = px.bar(city_counts, x="Count", y="City", orientation='h', color_discrete_sequence=['#FF6600'])
 fig_bar.update_layout(showlegend=False)
 st.plotly_chart(fig_bar, use_container_width=True)
 
 # -----------------------
-# TOP STORIES
+# STORIES SECTION
 # -----------------------
 st.markdown("<h3 id='top-stories'>📖 Top Stories</h3>", unsafe_allow_html=True)
 stories = [
     {
         "id": "jerusalem",
         "title": "Jerusalem: Tourniquet Saves a Life",
-        "image": "https://images.unsplash.com/photo-1603902853190-7d8f3b307b19",
-        "text": "On a rainy night in Jerusalem, UH volunteer Yossi raced through traffic after receiving an urgent alert. A man lay critically injured from a car crash, bleeding heavily. Within moments, Yossi applied a tourniquet and stopped the bleeding. He monitored vitals until an ambulance arrived. Doctors later confirmed that his intervention saved the man's life. Quick, professional, and selfless—this is what makes UH volunteers heroes every day."
+        "image": "https://images.unsplash.com/photo-1582719478178-9a4b91d70b7e",
+        "text": "On a cold, rainy night in Jerusalem, a major accident left a man critically injured and bleeding heavily. Within seconds of receiving the alert, volunteer Yossi raced through traffic, reaching the scene in just under three minutes. He quickly assessed the patient, applied a life-saving tourniquet, and managed to stabilize vital signs until advanced teams arrived. Doctors later confirmed that his quick action prevented certain death. This dramatic rescue highlights the impact of speed, training, and your support."
     },
     {
         "id": "tel-aviv",
-        "title": "Tel Aviv: Pedestrian Rescued",
-        "image": "https://images.unsplash.com/photo-1549575810-750b0fc78e5d",
-        "text": "In Tel Aviv’s bustling center, a pedestrian was struck by a car during rush hour. United Hatzalah medics arrived in under 3 minutes, stabilizing the patient with oxygen and spinal immobilization. Their timely efforts prevented catastrophic complications. Today, that patient is recovering in the hospital because volunteers dropped everything to answer the call."
+        "title": "Tel Aviv: Rush Hour Heroics",
+        "image": "https://images.unsplash.com/photo-1556742044-3c52d6e88c62",
+        "text": "In Tel Aviv’s busiest district, a pedestrian lay motionless after being hit by a car. Amid chaos, UH medics pushed through traffic to reach the victim within minutes. They provided oxygen, immobilized the spine, and treated injuries right on the asphalt. This intervention prevented life-threatening complications and bought precious time before hospital transfer. The patient survived surgery and is now recovering, thanks to swift teamwork and unwavering commitment to saving lives."
     },
     {
         "id": "haifa",
-        "title": "Haifa: Child Choking Emergency",
-        "image": "https://images.unsplash.com/photo-1587825140708-62f96e6d90b1",
-        "text": "Panic spread through a Haifa park as a toddler choked on food. In seconds, UH responders sprinted to the scene. They used back blows and suction to clear the airway, saving the child’s life. The mother wept with gratitude as her child began breathing normally. Another tragedy prevented—thanks to you and the UH family."
+        "title": "Haifa: Toddler Choking Emergency",
+        "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528",
+        "text": "Panic gripped a Haifa playground when a toddler choked on food. Parents screamed as seconds ticked away. Two UH volunteers, stationed nearby, sprinted to the scene. They delivered back blows and airway clearing techniques that restored the child’s breathing just as the ambulance arrived. The mother broke down in tears, clutching her child, overcome with relief. For this family, UH volunteers were angels in orange, turning terror into hope."
     }
 ]
 for story in stories:
@@ -175,15 +147,13 @@ for story in stories:
         st.write(story["text"])
 
 # -----------------------
-# JAVASCRIPT FOR AUTO SCROLL (WORKAROUND)
+# JS FOR SMOOTH SCROLL
 # -----------------------
 components.html("""
 <script>
 function scrollToStory(storyId){
     const el = document.querySelector('[name="story-' + storyId + '"]');
-    if(el){
-        el.scrollIntoView({behavior: 'smooth'});
-    }
+    if(el){ el.scrollIntoView({behavior: 'smooth', block: 'start'}); }
 }
 </script>
 """, height=0)
