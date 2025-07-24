@@ -107,4 +107,50 @@ while not stop_refresh:
             "In Tel Aviv, a motorcyclist was revived after a severe accident.",
             "A child was choking in Netanya—saved in minutes by UH medics.",
             "Cardiac arrest in Ashdod—rescue team arrived in under 3 minutes.",
-            "
+            "Herzliya beach swimmer rescued from near-drowning thanks to quick CPR."
+        ]
+    })
+
+    # Update counter
+    digits_html = "".join([f"<span style='font-size:48px;margin:0 3px;'>{d}</span>" for d in str(call_count)])
+    counter_placeholder.markdown(f"""
+    <div class='counter-bar'>
+        <div>{digits_html}</div>
+        <div style='font-size:18px;'>Calls Today</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Update map
+    with map_placeholder:
+        st_folium(build_map(data), width=700, height=500)
+
+    # Update pie chart
+    fig = px.pie(data, values="calls", names="city",
+                 color_discrete_sequence=["#FF6600", "#FF8533", "#FF9966", "#FFB399", "#FFD9CC"])
+    fig.update_layout(height=300, width=400)
+    pie_placeholder.plotly_chart(fig, use_container_width=False)
+
+    # Update bar chart
+    bar_fig = px.bar(data, x="city", y="calls", text="calls", color_discrete_sequence=["#FF6600"])
+    bar_fig.update_traces(textposition="outside")
+    bar_fig.update_layout(yaxis=dict(range=[0, 220]), height=300)
+    bar_placeholder.plotly_chart(bar_fig, use_container_width=True)
+
+    # Update story box
+    stories = [
+        {"title": "Life Saved in Jerusalem", "text": "Volunteer raced to save a man who collapsed during prayers."},
+        {"title": "Critical Rescue in Tel Aviv", "text": "A motorcyclist was revived after a severe accident thanks to UH medics."},
+        {"title": "Choking Child Saved", "text": "Quick action by UH responders in Netanya saved a child's life."},
+        {"title": "Cardiac Arrest Response", "text": "In Ashdod, medics arrived in under 3 minutes to save a life."},
+        {"title": "Near Drowning in Herzliya", "text": "Rapid CPR brought a swimmer back from the brink."}
+    ]
+    story = random.choice(stories)
+    story_placeholder.markdown(f"""
+    <div class='story-box'>
+        <div class='story-title'>{story["title"]}</div>
+        <div>{story["text"]}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Wait before next update
+    time.sleep(refresh_interval)
