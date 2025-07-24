@@ -13,18 +13,12 @@ st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 # CUSTOM CSS
 # -----------------------
 st.markdown("""
-   <style>
-/* Completely remove Streamlit padding at top */
-.block-container {
-    padding-top: 0rem !important;
-    margin-top: 0rem !important;
-}
-
-/* Sticky header */
+  <style>
+/* Sticky orange header */
 .header-bar {
     background-color: #FF6600;
     text-align: center;
-    padding: 6px 0;  /* Minimal padding */
+    padding: 12px 0; /* Balanced padding */
     color: white;
     font-size: 32px;
     font-weight: bold;
@@ -35,18 +29,23 @@ st.markdown("""
     z-index: 100;
 }
 
-/* Spacer after header */
-.header-spacer {
-    height: 65px; /* Reduced height drastically */
+/* Remove Streamlit default padding */
+.block-container {
+    padding-top: 0 !important;
 }
 
-/* Logo container with very small margin */
+/* Spacer for header */
+.header-spacer {
+    height: 90px; /* Enough space for header */
+}
+
+/* Logo container */
 .logo-container {
     text-align: center;
-    margin: 0px 0 25px 0;  /* Added strong bottom margin for gap before counter */
+    margin: 10px 0 20px 0; /* Added bottom margin for spacing before counter */
 }
 
-/* Counter styling */
+/* Counter bar */
 .counter-bar {
     background-color: #FFE6D5;
     display: flex;
@@ -55,15 +54,39 @@ st.markdown("""
     flex-direction: column;
     font-weight: bold;
     color: #FF6600;
-    padding: 12px;
+    padding: 18px;
     margin-bottom: 20px;
     border-radius: 10px;
 }
 
-/* Remove space between chart title and chart */
+/* Counter digits */
+.digit-container {
+    overflow: hidden;
+    height: 60px;
+    width: 40px;
+    display: inline-block;
+    margin: 0 3px;
+}
+.digit {
+    display: block;
+    font-size: 48px;
+    animation: roll 1.2s ease-in-out forwards;
+}
+@keyframes roll {
+    0% { transform: translateY(100%); }
+    100% { transform: translateY(0); }
+}
+
+/* Counter subtitle */
+.counter-title {
+    font-size: 18px;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+/* Tighten chart headers */
 h2, h3, .stSubheader {
-    margin-bottom: 0px !important;
-    padding-bottom: 0px !important;
+    margin-bottom: 0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -71,7 +94,7 @@ h2, h3, .stSubheader {
 # -----------------------
 # HEADER
 # -----------------------
-st.markdown("<div class='header-bar'>UNITED HATZALAH REAL-TIME DASHBOARD</div>", unsafe_allow_html=True)
+st.markdown("<div class='header-bar'>YOUR DAY OF LIFESAVING</div>", unsafe_allow_html=True)
 st.markdown("<div class='header-spacer'></div>", unsafe_allow_html=True)
 
 # -----------------------
