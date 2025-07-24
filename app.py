@@ -11,11 +11,10 @@ import time
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS
+# CSS STYLING FOR STICKY HEADER
 # -----------------------
 st.markdown("""
     <style>
-    .main {background-color: #F9F9F9;}
     .header-bar {
         background-color: #FF6600;
         display: flex;
@@ -26,6 +25,14 @@ st.markdown("""
         font-size: 32px;
         font-weight: bold;
         gap: 15px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 100;
+    }
+    .header-spacer {
+        height: 100px; /* Prevent content overlap */
     }
     .header-bar img {
         height: 60px;
@@ -34,34 +41,29 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------
-# HEADER BAR WITH LOGO + COUNTER
+# HEADER WITH LOGO + COUNTER (ANIMATED)
 # -----------------------
-# Try local logo, else fallback to online
-logo_url = "UH-logo.svg"
-try:
-    with open(logo_url, "rb"):
-        logo_src = logo_url
-except:
-    logo_src = "https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png"
+logo_url = "https://upload.wikimedia.org/wikipedia/commons/f/f7/United_Hatzalah_Logo.png"
 
-# Animated rolling counter
 calls_placeholder = st.empty()
 counter_html = f"""
 <div class='header-bar'>
-    <img src='{logo_src}' alt='UH Logo'>
+    <img src='{logo_url}' alt='UH Logo'>
     CALLS TODAY: <span id='counter'>0</span> AND COUNTING...
 </div>
+<div class='header-spacer'></div>
 """
 calls_placeholder.markdown(counter_html, unsafe_allow_html=True)
 
-# Counter animation
+# Animate rolling counter
 total_calls = 1248
 for i in range(0, total_calls + 1, 50):
     calls_placeholder.markdown(f"""
     <div class='header-bar'>
-        <img src='{logo_src}' alt='UH Logo'>
+        <img src='{logo_url}' alt='UH Logo'>
         CALLS TODAY: {i:,} AND COUNTING...
     </div>
+    <div class='header-spacer'></div>
     """, unsafe_allow_html=True)
     time.sleep(0.05)
 
@@ -85,7 +87,7 @@ data = {
 df = pd.DataFrame(data)
 
 # -----------------------
-# LAYOUT: MAP + PIE CHART
+# LAYOUT: MAP + PIE
 # -----------------------
 col1, col2 = st.columns([2, 1])
 
@@ -108,12 +110,13 @@ with col1:
 
 with col2:
     st.subheader("📊 Call Type Breakdown")
-    fig_pie = px.pie(df, names="Call Type", color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3','#FFB380'])
+    fig_pie = px.pie(df, names="Call Type",
+                     color_discrete_sequence=['#FF6600','#FF944D','#FFDAB3','#FFB380'])
     fig_pie.update_traces(textinfo="percent+label")
     st.plotly_chart(fig_pie, use_container_width=True)
 
 # -----------------------
-# TOP CITIES
+# TOP CITIES BAR CHART
 # -----------------------
 st.subheader("🏙️ Top Cities by Call Volume")
 city_counts = df["City"].value_counts().reset_index()
