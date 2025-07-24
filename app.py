@@ -11,7 +11,7 @@ import folium
 st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 
 # -----------------------
-# CUSTOM CSS FOR ZERO GAPS + BRANDING
+# CSS STYLING
 # -----------------------
 st.markdown("""
 <style>
@@ -142,6 +142,12 @@ stories = {
 image_url = "https://israelrescue.org/app/uploads/2022/11/volunteer-1-1024x683.jpg"
 
 # -----------------------
+# FUNCTION TO CREATE SNIPPETS
+# -----------------------
+def create_snippet(text, words=15):
+    return " ".join(text.split()[:words]) + "..."
+
+# -----------------------
 # MAP + PIE CHART
 # -----------------------
 col1, col2 = st.columns([2, 1])
@@ -151,23 +157,34 @@ with col1:
     st.markdown("<div class='map-container'>", unsafe_allow_html=True)
 
     if st.session_state.selected_story is None:
-        # Show heatmap with markers
+        # Create map
         m = folium.Map(location=[31.5, 34.8], zoom_start=7, tiles="cartodbpositron")
         HeatMap(list(coordinates.values()), gradient={0.2: '#FFDAB3', 0.4: '#FF944D', 0.6: '#FF6600', 1: '#CC5200'}).add_to(m)
+
+        # Add markers with snippet popups
         for city, coords in coordinates.items():
-            folium.Marker(coords, tooltip=city).add_to(m)
+            snippet = create_snippet(stories[city])
+            folium.Marker(
+                coords,
+                popup=f"<b>{city}</b><br>{snippet}",
+                icon=folium.Icon(color="orange", icon="info-sign")
+            ).add_to(m)
 
         map_data = st_folium(m, width=700, height=500)
         if map_data and map_data.get("last_object_clicked"):
-            clicked_city = map_data["last_object_clicked"].get("tooltip")
-            if clicked_city in stories:
-                st.session_state.selected_story = clicked_city
+            clicked_coords = map_data["last_object_clicked"]
+            for city, coords in coordinates.items():
+                if abs(coords[0] - clicked_coords["lat"]) < 0.05 and abs(coords[1] - clicked_coords["lng"]) < 0.05:
+                    st.session_state.selected_story = city
+                    st.experimental_rerun()
     else:
-        # Show story overlay
+        # Show full story overlay
         city = st.session_state.selected_story
         st.markdown(f"""
         <div class='story-overlay'>
-            <button class='close-button' onclick="window.parent.postMessage('close','*')">X</button>
+            <form action="" method="post">
+                <button class='close-button' name="close">X</button>
+            </form>
             <h3>{city}: Featured Rescue</h3>
             <img src='{image_url}' class='story-image'>
             <p class='story-text'>{stories[city]}</p>
@@ -175,6 +192,7 @@ with col1:
         """, unsafe_allow_html=True)
         if st.button("Close Story"):
             st.session_state.selected_story = None
+            st.experimental_rerun()
 
     st.markdown("</div>", unsafe_allow_html=True)
 
