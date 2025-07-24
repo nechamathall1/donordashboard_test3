@@ -133,7 +133,7 @@ st.markdown("<div class='logo-container'><img src='https://israelrescue.org/app/
 # -----------------------
 number = "1248"
 digits_html = "".join([f"<div class='digit-container'><div class='digit'>{d}</div></div>" for d in number])
-st.markdown(f""
+st.markdown(f"""
 <div class='counter-bar'>
     <div>{digits_html}</div>
     <div class='counter-title'>
