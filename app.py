@@ -13,83 +13,59 @@ st.set_page_config(page_title="United Hatzalah Dashboard", layout="wide")
 # CUSTOM CSS
 # -----------------------
 st.markdown("""
-    <style>
-    /* Sticky orange header */
-    .header-bar {
-        background-color: #FF6600;
-        text-align: center;
-        padding: 10px 0;
-        color: white;
-        font-size: 34px;
-        font-weight: bold;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 100;
-    }
+   <style>
+/* Completely remove Streamlit padding at top */
+.block-container {
+    padding-top: 0rem !important;
+    margin-top: 0rem !important;
+}
 
-    /* Remove default Streamlit top padding */
-    .block-container {
-        padding-top: 0rem;
-    }
+/* Sticky header */
+.header-bar {
+    background-color: #FF6600;
+    text-align: center;
+    padding: 6px 0;  /* Minimal padding */
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+}
 
-    /* Spacer after header */
-    .header-spacer {
-        height: 80px;
-    }
+/* Spacer after header */
+.header-spacer {
+    height: 65px; /* Reduced height drastically */
+}
 
-    /* Logo styling */
-    .logo-container {
-        text-align: center;
-        margin: 8px 0 12px 0; /* Added bottom margin for spacing before counter */
-    }
+/* Logo container with very small margin */
+.logo-container {
+    text-align: center;
+    margin: 0px 0 25px 0;  /* Added strong bottom margin for gap before counter */
+}
 
-    /* Counter styling */
-    .counter-bar {
-        background-color: #FFE6D5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        font-weight: bold;
-        color: #FF6600;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 10px;
-    }
+/* Counter styling */
+.counter-bar {
+    background-color: #FFE6D5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-weight: bold;
+    color: #FF6600;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
 
-    /* Rolling number animation */
-    .digit-container {
-        overflow: hidden;
-        height: 60px;
-        width: 40px;
-        display: inline-block;
-        position: relative;
-        margin: 0 2px;
-    }
-    .digit {
-        display: block;
-        animation: roll 1.2s ease-in-out forwards;
-        font-size: 48px;
-    }
-    @keyframes roll {
-        0% { transform: translateY(100%); }
-        100% { transform: translateY(0); }
-    }
-
-    /* Counter title */
-    .counter-title {
-        font-size: 18px;
-        margin-top: 6px;
-        text-transform: uppercase;
-    }
-
-    /* Tighten chart header spacing */
-    h2, h3, .stSubheader {
-        margin-bottom: 0px !important;
-    }
-    </style>
+/* Remove space between chart title and chart */
+h2, h3, .stSubheader {
+    margin-bottom: 0px !important;
+    padding-bottom: 0px !important;
+}
+</style>
 """, unsafe_allow_html=True)
 
 # -----------------------
