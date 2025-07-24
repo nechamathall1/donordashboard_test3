@@ -90,7 +90,8 @@ for _, row in data.iterrows():
         tooltip=f"{row['city']}: {row['calls']} calls",
         popup=row["story"]
     ).add_to(m)
-map_placeholder.components_v1.html(st_folium(m, width=700, height=500), height=520)
+with map_placeholder:
+    st_folium(m, width=700, height=500)
 
 # -----------------------
 # UPDATE PIE CHART
